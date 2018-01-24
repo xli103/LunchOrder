@@ -11,18 +11,12 @@ var restaurantSchema = new mongoose.Schema({
 	lng: Number,
 	// add provider here
 	// add comments here
-	popularFoods: [
+	foods: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Food"
 		}
 	],
-	normalFoods: [
-		{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "Food"
-		}
-	]
 
 });
 
