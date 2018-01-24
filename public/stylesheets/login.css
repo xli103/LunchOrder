@@ -1,0 +1,9 @@
+#login-header {
+  z-index: 1;
+  position: relative;
+  text-align: center;
+  padding-top: 40vh;
+  padding-left: 25%;
+  padding-right: 25%;
+}
+
