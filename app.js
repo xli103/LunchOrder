@@ -4,14 +4,19 @@ var express = require("express"),
 	bodyParser = require("body-parser"),
 	LocalStrategy = require('passport-local').Strategy,
 	passportLocalMongoose = require("passport-local-mongoose"),
+	methodOverride = require("method-override"),
 	flash = require("connect-flash"),
-	User = require("./models/user");
+	User = require("./models/user"),
+	Food = require("./models/food"),
+	Order = require("./models/order"),
+	Restaurant = require("./models/restaurant");
 
 var app = express();
 
 //Require routes
 var indexRoutes = require("./routes/index");
 var restaurantRoutes = require("./routes/restaurant");
+var foodRoutes = require("./routes/food");
 
 //get rid of warnings
 mongoose.Promise = global.Promise;
@@ -23,6 +28,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 //use style file
 app.use(express.static(__dirname + "/public"));
+//use method override
+app.use(methodOverride("_method"));
 
 //use connect flash
 app.use(flash());
@@ -72,6 +79,7 @@ app.use(function(req, res, next){
 // Use Routes
 app.use(indexRoutes);
 app.use("/restaurants", restaurantRoutes);
+app.use("/foods", foodRoutes);
 
 //listen to port, start server
 app.listen(process.env.PORT || 3000, process.env.IP, function(){

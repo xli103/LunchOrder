@@ -11,10 +11,9 @@ var orderSchema = mongoose.Schema({
 	},
 	foods: [
 		{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "Food"
-		},
-		amounts: String
+			name: String,
+			amount: Number
+		}
 	]
 });
 

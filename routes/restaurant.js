@@ -53,17 +53,14 @@ router.get("/", function(req, res){
 
 // NEW
 router.get("/new", function(req, res){
-	res.render("restaurants/new");
+	res.render("restaurants/new", {page: "new"});
 });
 
 // CREATE
 router.post("/", function(req, res) {
 	//get data from form and add to restaurant array
 		var name = req.body.name;
-		console.log(req.body + "|");
-		console.log(req.body.name + "|");
 		var desc = req.body.description;
-		console.log(req.body.description + "|");
 		var newRestaurant = {name: name, description: desc};
 		//Create a new restaurant and save to DB
 		Restaurant.create(newRestaurant, function(err, newlyCreated){
@@ -78,15 +75,57 @@ router.post("/", function(req, res) {
 });
 
 // SHOW
-router.get("/show", function(req, res){
-	res.send("Chose restaurants here");
+router.get("/:id", function(req, res){
+	//find the restaurant with provided ID
+	Restaurant.findById(req.params.id).populate("foods").exec(function(err, foundRestaurant){
+		if(err || !foundRestaurant){
+			req.flash("error", "Restaurant not found");
+			res.redirect("back");
+		}else{
+			//render show template with that restaurant
+			res.render("restaurants/show", {restaurant: foundRestaurant});
+		}
+	});
 });
 
 // EDIT
+router.get("/:id/edit", function(req, res){
+		Restaurant.findById(req.params.id, function(err, foundRestaurant){
+			res.render("restaurants/edit", {restaurant: foundRestaurant});
+		});
+		
+});
 
 // UPDATE
+router.put("/:id", function(req, res){
+	//find and update the correct campground
+	var name = req.body.name;
+	var desc = req.body.description;
+	var newRestaurant = {name: name, description: desc};
+  	//update
+  	Restaurant.findByIdAndUpdate(req.params.id, newRestaurant, function(err, updatedCampground){
+		if(err){
+			req.flash("error", err.message);
+			res.redirect("back");
+		}else{
+			req.flash("success", "Successfully Updated!");
+			res.redirect("/restaurants/" + req.params.id);
+		}
+	});
+});
 
 // DESTORY
+router.delete("/:id", function(req,res){
+	Restaurant.findByIdAndRemove(req.params.id, function(err){
+		if(err){
+			res.redirect("/restaurants");
+		}else{
+			res.redirect("/restaurants");
+		}
+	});
+});
+
+
 
 function escapeRegex(text){
 	return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");

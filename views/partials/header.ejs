@@ -32,12 +32,15 @@
 	        			<li class="<%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>">
 	        				<a href="/login">Login</a>
 	        			</li>
-	        			<li class="<%= typeof page !== 'undefined' && page === 'register' ? 'active' : '' %>">
+	        			<!-- <li class="<%= typeof page !== 'undefined' && page === 'register' ? 'active' : '' %>">
 	        				<a href="/register">Sign Up</a>
-	        			</li>
+	        			</li> -->
 	        		<% }else{ %>
 	        			<% if(currentUser.isAdmin){ %>
-	        			<li>
+	        			<li class="<%= typeof page !== 'undefined' && page === 'register' ? 'active' : '' %>">
+	        				<a href="/register">Register New User</a>
+	        			</li>
+	        			<li class="<%= typeof page !== 'undefined' && page === 'new' ? 'active' : '' %>">
 	        				<a href="/restaurants/new">Add Restaurant</a>
 	        			</li>
 	        			<% } %>
@@ -45,7 +48,8 @@
 	        				<a href="/orders/<%= currentUser._id %>">My Orders Today</a>
 	        			</li>
 	        			<li>
-	        				<a href="/users/<%= currentUser._id %>">欢迎, <%= currentUser.chineseName %></a>
+	        				<!-- href="/users/<%= currentUser._id %>" -->
+	        				<a href="#">欢迎, <%= currentUser.chineseName %></a>
 	        			</li>
 	        			<li><a href="/logout">Logout</a></li>
 	        		<% } %>
