@@ -1,17 +1,57 @@
 <% include ../partials/header %>
 
 
-	<div class="row">
+	<div class="row" style="position: relative;">
 		<div class="col-md-3">
 			<p class="lead">Restaurants</p>
-			<div class="list-group">
-				<li class="list-group-item active">Info 1</li>
-				<li class="list-group-item">Info 2</li>
-				<li class="list-group-item">Info 3</li>
+			<br><hr><br>
+			<div class="text-left">
+					<a class="btn btn-success pull-left" role="button" data-toggle="collapse" href="#collapseNewOrder" aria-expanded="false" aria-controls="collapseNewOrder">
+					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add To My Order</a>
 			</div>
 			<!-- change to orders here  -->
-			<div id="map"></div>
+			<br><br>
+
+			<div class="collapse" id="collapseNewOrder" onclick="chechTime()">
+				<div class="well" style="border-left: 5px solid #00C851;">
+					<% if(restaurant.foods.length < 1) { %>
+						<h5>对不起，饭头太懒，没有添加菜单！</h5>
+					<% } else if(!restaurant.isActive) { %>
+						<h5>对不起，今天没有开放此餐厅订餐，请前往指定餐厅下单 <a href="/orders-today"><br>>>Click here</a></h5>
+					<% } else if(!currentUser) { %>
+							<!--If the user is not logged in, direct him to the login page-->
+							<h5>You need to login to do that, <a href="/login">Click here</a> to go to the login page.</h5>
+						<% } else{ %>
+							<!--If the user is logged in, show the new food form-->
+							<h4>Dish <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span></h4>
+							<form id="add-order-form" action="/orders/" method="POST">
+								<div class="form-group">
+									<select id="selectedFood" class="form-control" onchange="getPrice()">
+										<% restaurant.foods.forEach(function(food) { %>
+										<option value="<%= food.name %>-<%= food.price %>"><span><%= food.name %></span></option>
+										<% }) %>
+									</select>
+								</div>
+								<div class="form-group">
+									<input id="selectedFoodAmount" class="form-control" type="number" name="food[amount]" placeholder="Amount(1-10)" min="1" max="10" step="1" onchange="getPrice()">
+								</div>
+								<!-- security risks here -->
+								<div class="form-group">
+									<span><strong>Subtotal:</strong></span><span style="float: right;" id="totalPrice">$0</span>
+								</div>
+								<input id="selectedFoodTotalPrice" type="hidden" name="food[totalPrice]" value="0">
+								<input id="selectedFoodName" type="hidden" name="food[name]" value="<%= restaurant.foods[0].name %>">
+								<div class="form-group">
+									<button id="addToCart" class="btn btn-success btn-sm">Add to Cart <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span></button>
+								</div>
+								<p style="color: red;" id="overTimeAlert"></p>
+							</form>
+						<% } %>
+				</div>
+			</div>
+
 		</div>
+
 		<div class="col-md-9">
 			<div class="thumbnail">
 				<img id="restaurantShowImg" class="img-responsive" src="<%= restaurant.image %>">
@@ -33,7 +73,7 @@
 		      <!--Setting up the add new comment button that is used for collapsing-->
 		     <%if(currentUser && currentUser.isAdmin){%>
 		      	<div class="text-right">
-					<a class="btn btn-success pull-right" role="button" data-toggle="collapse" href="#collapseComment" aria-expanded="false" aria-controls="collapseComment">
+					<a class="btn btn-success pull-right" role="button" data-toggle="collapse" href="#collapseFood" aria-expanded="false" aria-controls="collapseFood">
 					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Food</a>
 				</div>
 			<% } %>
@@ -41,15 +81,15 @@
 				<h4><strong>Menu <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span></strong></h4>
 
 		      <!--Collapse Add a comment form START-->
-				<div class="collapse" id="collapseComment">
+				<div class="collapse" id="collapseFood">
 					<div class="well" style="border-left: 5px solid #00C851;">
 						<% if(!currentUser || !currentUser.isAdmin) { %>
 							<!--If the user is not logged in, direct him to the login page-->
 							<h5>你需要成为饭头才能继续 <a href="/login">Click here</a> to go to the login page.</h5>
 						<% } else{ %>
-							<!--If the user is logged in, show the new comment form-->
+							<!--If the user is logged in, show the new food form-->
 							<h4>Add a New Food <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span></h4>
-							<form id="add-comment-form" action="/restaurants/<%= restaurant._id %>/foods" method="POST">
+							<form id="add-food-form" action="/restaurants/<%= restaurant._id %>/foods" method="POST">
 								<div class="form-group">
 									<input class="form-control" type="text" name="food[name]" placeholder="Food's name">
 								</div>
@@ -57,7 +97,7 @@
 									<input class="form-control" type="number" name="food[price]" placeholder="Price" min="1" max="200" step="0.01">
 								</div>
 								<div class="form-group">
-									<textarea class="form-control" name="food[description]" placeholder="Write your comment..." form="add-comment-form" rows="5" cols="70"></textarea>
+									<textarea class="form-control" name="food[description]" placeholder="Write your description..." form="add-food-form" rows="5" cols="70"></textarea>
 								</div>
 								<div class="form-group">
 									<button class="btn btn-success btn-sm">Add <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span></button>
@@ -82,7 +122,8 @@
 				<div class="row">
 					<div class="col-md-12">
 		          		<!--Printing the food-->
-		          		<p><%= food.name %></p>
+		          		<p><span><%= food.name %></span> <span style="float: right;">$<%= food.price %></span></p> 
+		          		<!-- <p><%= food.description %></p> -->
 		          		<!--If the visitor is admin, show the edit and delete buttons-->
 		            	<% if (currentUser && currentUser.isAdmin) { %>
 			          		<!--Edit button admin for collapsing the edit food form-->
@@ -98,14 +139,14 @@
 			              			<h4>Edit food <span class="glyphicon glyphicon-edit" aria-hidden="true"></span></h4>
 			              			<form id="edit-food-form" action="/restaurants/<%= restaurant._id %>/foods/<%= food._id %>?_method=PUT" method="POST">
 			                			<div class="form-group">
-											<input class="form-control" type="text" name="food[name]" value="<%= food.name %>">
+											<input class="form-control" type="text" disabled name="food[name]" value="<%= food.name %>">
 										</div>
 										<div class="form-group">
 											<input class="form-control" type="number" name="food[price]" value="<%=food.price%>" min="1" max="200" step="0.01">
 										</div>
-			                			<div class="form-group">
-			                 				<textarea class="form-control" name="food[description]" placeholder="Your food name..." form="edit-food-form" rows="5" cols="70"><%= food.description %></textarea>
-			                			</div>
+			                			<!-- <div class="form-group">
+			                 				<textarea class="form-control" name="food[description]" placeholder="Your food description..." form="edit-food-form" rows="5" cols="70"><%= food.description %></textarea>
+			                			</div> -->
 			                			<div class="form-group">
 			                  				<button class="btn btn-warning btn-sm">Edit Food <span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
 			                			</div>
@@ -122,6 +163,5 @@
 
   		</div>
 	</div>
-	
 
 <% include ../partials/footer %>

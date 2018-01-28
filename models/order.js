@@ -7,12 +7,14 @@ var orderSchema = mongoose.Schema({
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User"
 		},
-		username: String
+		username: String,
+		chineseName: String
 	},
 	foods: [
 		{
 			name: String,
-			amount: Number
+			amount: Number,
+			totalPrice: String
 		}
 	]
 });

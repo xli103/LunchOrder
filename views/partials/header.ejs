@@ -7,7 +7,6 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href="/stylesheets/login.css">
 		<link rel="stylesheet" type="text/css" href="/stylesheets/main.css">
-		<link rel="stylesheet" type="text/css" href="/stylesheets/register.css">
 	</head>
 	<body>
 	<nav class="navbar navbar-default">
@@ -45,11 +44,14 @@
 	        			</li>
 	        			<% } %>
 	        			<li>
+	        				<a href="/restaurants/">Restaurants</a>
+	        			</li>
+	        			<li>
 	        				<a href="/orders/<%= currentUser._id %>">My Orders Today</a>
 	        			</li>
 	        			<li>
 	        				<!-- href="/users/<%= currentUser._id %>" -->
-	        				<a href="#">欢迎, <%= currentUser.chineseName %></a>
+	        				<a href="/users/<%= currentUser._id %>#">欢迎, <%= currentUser.chineseName %></a>
 	        			</li>
 	        			<li><a href="/logout">Logout</a></li>
 	        		<% } %>

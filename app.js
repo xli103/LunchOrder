@@ -17,9 +17,12 @@ var app = express();
 var indexRoutes = require("./routes/index");
 var restaurantRoutes = require("./routes/restaurant");
 var foodRoutes = require("./routes/food");
+var orderRoutes = require("./routes/order");
+var userRoutes = require("./routes/user");
 
 //get rid of warnings
 mongoose.Promise = global.Promise;
+var url = process.env.DATABASEURL || "mongodb://localhost/lunch_order_app";
 
 // APP config
 app.use(bodyParser.urlencoded({extended: true}));
@@ -40,7 +43,7 @@ app.locals.moment = require("moment");
 //app.use(expressSanitizer());
 
 // connect database 
-mongoose.connect("mongodb://localhost/lunch_order_app");
+mongoose.connect(url);
 
 // PASSPORT CONFIGURATION
 // ***** Basic Unsecure Method Here, MUST CHANGE if scenario changes!!!    *****
@@ -53,6 +56,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(
   function(username, password, done) {
+  	if(username === "admin"){
+  		return done(null, false, {message: "怎么可能呢! 😁"});
+  	}
     User.findOne({ username: username }, function (err, user) {
     	if(err) { return done(err); }
     	if(!user) {
@@ -79,7 +85,10 @@ app.use(function(req, res, next){
 // Use Routes
 app.use(indexRoutes);
 app.use("/restaurants", restaurantRoutes);
-app.use("/foods", foodRoutes);
+app.use("/restaurants/:id/foods", foodRoutes);
+app.use("/users", userRoutes);
+app.use("/orders", orderRoutes);
+
 
 //listen to port, start server
 app.listen(process.env.PORT || 3000, process.env.IP, function(){

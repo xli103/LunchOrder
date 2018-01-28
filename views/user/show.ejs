@@ -1,0 +1,47 @@
+<% include ../partials/header %>
+
+<div class="row">
+	<div class="col-md-3">
+		<h1><%= user.firstName + " " + user.lastName %></h1>
+		<div class="thumbnail">
+			<img src="https://res.cloudinary.com/dzi9oazgw/image/upload/t_media_lib_thumb/v1515365276/default_avatar_wju6it.png" alt="user profile image" height="300px" width="200px"/>
+			<!-- <div class="caption"><a href="mailto:<%= user.email %>"><%= user.email %></a></div> -->
+		</div>
+		<h3>Personal Info</h3>
+		<p>
+			Just eat it !
+		</p>
+	</div>
+	<div class="col-md-9">
+		<h2><%= user.chineseName%>'s Order History</h2>
+		<h5><em>为你记录吃过的一切：</em></h5>
+		<table class="table">
+			<thead>
+				<tr>
+					<td>Date</td>
+					<td>Dish</td>
+					<td>Amount</td>
+					<td>Price($)</td>
+				</tr>
+			</thead>
+			<tfoot>
+				<!-- To Fill -->
+			</tfoot>
+			<% orders.forEach(function(order){ %>
+				<tbody>
+					<tr>
+
+						<td><%= moment(order.createdAt).subtract(10, 'days').calendar(); %></td>
+						<td><%= order.foods[0].name %></td>
+						<td><%= order.foods[0].amount %></td>
+						<td><%= order.foods[0].totalPrice %></td>
+					</tr>
+				</tbody>
+			<% }) %>
+		</table>
+	</div>
+</div>
+
+
+
+<% include ../partials/footer %>

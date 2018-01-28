@@ -1,11 +1,11 @@
 var express = require("express");
 var router = express.Router();
 var Restaurant = require("../models/restaurant");
-
+var middleware = require("../middleware");
 // storage here
 
 // index route
-router.get("/", function(req, res){
+router.get("/", middleware.isLoggedIn, function(req, res){
     var perPage = 8;
     var pageQuery = parseInt(req.query.page);
     var pageNumber = pageQuery ? pageQuery : 1;
@@ -52,12 +52,12 @@ router.get("/", function(req, res){
 });
 
 // NEW
-router.get("/new", function(req, res){
+router.get("/new", middleware.isAdminLoggedIn, function(req, res){
 	res.render("restaurants/new", {page: "new"});
 });
 
 // CREATE
-router.post("/", function(req, res) {
+router.post("/", middleware.isAdminLoggedIn, function(req, res) {
 	//get data from form and add to restaurant array
 		var name = req.body.name;
 		var desc = req.body.description;
@@ -75,7 +75,7 @@ router.post("/", function(req, res) {
 });
 
 // SHOW
-router.get("/:id", function(req, res){
+router.get("/:id", middleware.isLoggedIn, function(req, res){
 	//find the restaurant with provided ID
 	Restaurant.findById(req.params.id).populate("foods").exec(function(err, foundRestaurant){
 		if(err || !foundRestaurant){
@@ -89,7 +89,7 @@ router.get("/:id", function(req, res){
 });
 
 // EDIT
-router.get("/:id/edit", function(req, res){
+router.get("/:id/edit", middleware.isAdminLoggedIn, function(req, res){
 		Restaurant.findById(req.params.id, function(err, foundRestaurant){
 			res.render("restaurants/edit", {restaurant: foundRestaurant});
 		});
@@ -97,13 +97,15 @@ router.get("/:id/edit", function(req, res){
 });
 
 // UPDATE
-router.put("/:id", function(req, res){
-	//find and update the correct campground
+router.put("/:id", middleware.isAdminLoggedIn, function(req, res){
+	//find and update the correct restaurant
 	var name = req.body.name;
 	var desc = req.body.description;
-	var newRestaurant = {name: name, description: desc};
+	var isActive = req.body.isActive;
+	var image = req.body.image;
+	var newRestaurant = {name: name, description: desc, isActive: isActive, image: image};
   	//update
-  	Restaurant.findByIdAndUpdate(req.params.id, newRestaurant, function(err, updatedCampground){
+  	Restaurant.findByIdAndUpdate(req.params.id, newRestaurant, function(err, updatedRestaurant){
 		if(err){
 			req.flash("error", err.message);
 			res.redirect("back");
@@ -114,8 +116,9 @@ router.put("/:id", function(req, res){
 	});
 });
 
+
 // DESTORY
-router.delete("/:id", function(req,res){
+router.delete("/:id", middleware.isAdminLoggedIn, function(req,res){
 	Restaurant.findByIdAndRemove(req.params.id, function(err){
 		if(err){
 			res.redirect("/restaurants");

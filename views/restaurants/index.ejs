@@ -33,6 +33,11 @@
 					<img src="<%= restaurant.image%>">
 					<div class="caption">
 						<h4><%= restaurant.name%></h4>
+						<% if(restaurant.isActive){ %>
+							<h6 style="color: green;">Opening</h6>
+						<% } else { %>
+							<h6 style="color: red;">Closed</h6>
+						<% } %>
 					</div>
 					<p>
 						<a href="/restaurants/<%= restaurant._id %>" class="btn btn-primary">More Info</a>

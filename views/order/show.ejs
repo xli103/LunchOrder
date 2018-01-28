@@ -1,0 +1,67 @@
+<!-- Cookie Cart Possible Solution: 1 save shopping contents in string, separate by "|" in cookie. 2 parse cookie in this page and trans it into forms to be submitted -->
+
+<% include ../partials/header %>
+
+	<div class="row">
+		<h1 style="text-align: center">My Orders Today</h1>
+		<div style="width: 30%; margin: 30px auto;">
+
+			<table id="table" class="table">
+				<thead>
+					<tr>
+						<th>Order</th>
+						<th>Dish</th>
+						<th>Amount</th>
+						<th>Price($)</th>
+					</tr>
+				</thead>
+
+				<tfoot>
+					<tr>
+						<th>Total: </th>
+						<th></th>
+						<th></th>
+						<th>$<span id="total"></span></th>
+					</tr>
+				</tfoot>
+
+				<tbody>
+				<% var i = 1; %>
+				<% orders.forEach(function(order){ %>
+					<tr>
+						<th><%= i %></th>
+						<th><%= order.foods[0].name %></th>
+						<th><%= order.foods[0].amount %></th>
+						<th><%= order.foods[0].totalPrice %></th>
+						<th>
+							<form id="delete-form" action="/orders/<%= order._id %>?_method=DELETE" method="POST" style="display: inline;">
+			            		<button class="delete btn btn-xs btn-danger" style="display: none;" onclick="toggle()"><i class="glyphicon glyphicon-trash"></i></button>
+			          		</form>
+						</th>
+					</tr>
+				<% }) %>
+				</tbody>
+			</table>
+
+			<p><a href="/orders-today"><button class="btn btn-primary">Add Dish</button></a><button style="float: right;" class="btn btn-warning" onclick="toggle()">Edit</button></p>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		window.onload = function calcTotal(){
+			var table = document.getElementById("table");
+			var sum = 0;
+			for(var i = 1; i < table.rows.length - 1; i++){
+				sum += Number(table.rows[i].cells[3].innerHTML);
+			}
+			var result = document.getElementById("total");
+			result.innerHTML = sum.toFixed(2);
+		}
+
+		function toggle(){
+			$(".delete").toggle()
+		}
+	</script>
+
+
+<% include ../partials/footer %>

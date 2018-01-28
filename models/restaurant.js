@@ -9,6 +9,7 @@ var restaurantSchema = new mongoose.Schema({
 	location: String,
 	lat: Number,
 	lng: Number,
+	isActive: {type: Boolean, defalut: false},
 	// add provider here
 	// add comments here
 	foods: [
@@ -17,7 +18,6 @@ var restaurantSchema = new mongoose.Schema({
 			ref: "Food"
 		}
 	]
-
-});
+},{usePushEach: true});
 
 module.exports = mongoose.model("Restaurant", restaurantSchema);

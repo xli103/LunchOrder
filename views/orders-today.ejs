@@ -1,26 +1,102 @@
 <% include ./partials/header %>
 
 
-<h1>nav to new order or myorder here</h1>
-<a href="restaurants/">New Orders</a>
-<br>
-<a href="">Check my orders</a>
+<!-- <h1>nav to new order or myorder here</h1> -->
+<!-- <a href="restaurants/">New Orders</a> -->
+<!-- <br> -->
+<!-- <a href="">Check my orders</a> -->
+
+
+
+<div>
+		<h2><p style="text-align: center;">今日开放订餐的餐厅为： <span id="restaurantToday"><%= restaurants[0].name %></span></p></h2>
+		<h6 style="text-align: center;"><em style="color: red;">每日点餐时间为 0:00 - 11:20</em></h6>
+		<p style="text-align: center;"><a class="btn btn-primary btn-md" href="/restaurants/<%= restaurants[0]._id %>"> 进入餐厅 </a></p>
+</div>
+
 
 <br>
 
+<h1> 今日群订单 </h1>
+
+<table class=table>
+	<thead>
+		<tr>
+			<th>dish</th>
+			<th>amount</th>
+			<th>price($)</th>
+		</tr>
+	</thead>
+	<tfoot>
+		<tr>
+			<th>Total: </th>
+			<th></th>
+			<th id="total"></th>
+		</tr>
+	</tfoot>
+	<tbody>
+		<% var jsonFood = JSON.stringify(foodStatic).replace(/}/g,"") %>
+		<% jsonFood = jsonFood.replace(/{/g, "") %>
+		<% jsonFood = jsonFood.replace(/"/g, "") %>
+		<% jsonFood = jsonFood.replace("[", "") %>
+		<% jsonFood = jsonFood.replace("]", "") %>
+		<% jsonFood = jsonFood.replace(/,name/g, "*name")%>
+		<% jsonFoodstrs = jsonFood.split("*") %>
+		<%for(var i = 0; i < foodStatic.length; i++){ %>
+		<tr>
+			<% var eachFood = jsonFoodstrs[i].split(","); %>
+			<% eachFood.forEach(function(food){ %>
+				<% var attr = food.split(":"); %>
+					<td><%= attr[1] %></td>
+				<% }); %>
+		</tr>
+		<% } %>
+	</tbody>
+</table>
 
 
-<h1> 今日订单 </h1>
+
+
+<br>
+
+
+
+
+
 
 
 
 
 <h1> 订单详情 </h1>
 
+<table id="orderDetails" class="table">
+	<thead>
+		<tr>
+			<td>姓名</td>
+			<td>菜名</td>
+			<td>数量</td>
+			<td>下单时间</td>
+			<td>总价</td>
+		</tr>
+	</thead>
 
+	<tfoot>
+		
+	</tfoot>
 
+	<tbody>
+		<% orders.forEach(function(order){ %>
+		<tr>
+			<td><%= order.owner.chineseName %></td>
+			<td><%= order.foods[0].name %></td>
+			<td><%= order.foods[0].amount %></td>
+			<td><%= moment(order.createdAt).fromNow() %></td>
+			<td><%= order.foods[0].totalPrice %></td>
+		</tr>
+		<% }) %>
+	</tbody>
 
-
+</table>
 
 
 
