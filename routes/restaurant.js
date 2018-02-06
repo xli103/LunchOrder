@@ -103,7 +103,8 @@ router.put("/:id", middleware.isAdminLoggedIn, function(req, res){
 	var desc = req.body.description;
 	var isActive = req.body.isActive;
 	var image = req.body.image;
-	var newRestaurant = {name: name, description: desc, isActive: isActive, image: image};
+	var delivery_fee = req.body.delivery_fee
+	var newRestaurant = {name: name, description: desc, isActive: isActive, image: image, delivery_fee: delivery_fee};
   	//update
   	Restaurant.findByIdAndUpdate(req.params.id, newRestaurant, function(err, updatedRestaurant){
 		if(err){

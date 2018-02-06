@@ -27,7 +27,6 @@ router.post("/", middleware.isAdminLoggedIn, function(req, res){
 			console.log(err);
 			res.redirect("/restaurants");
 		}else{
-			console.log(req.body.food);
 			Food.create(req.body.food, function(err, food){
 				if(err){
 					req.flash("error", "Something went wrong");

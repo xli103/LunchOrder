@@ -5,6 +5,8 @@ var Food = require("../models/food");
 var User = require("../models/user");
 var Order = require("../models/order");
 var middleware = require("../middleware");
+var dailyRatio = require("../conf/daily_ratio");
+var moment = require("moment");
 
 // Index
 
@@ -19,8 +21,6 @@ var middleware = require("../middleware");
 // Create
 router.post("/", middleware.checkOrderTime, function(req, res) {
 	//get data from form and add to restaurant array
-	console.log(req.body.food);
-	console.log(req.user);
 	//Create a new order and save to DB
 	var newOrder = new Order();
 	newOrder.owner.id = req.user._id;
@@ -35,29 +35,12 @@ router.post("/", middleware.checkOrderTime, function(req, res) {
 			res.redirect("back");
 		}
 	});
-
-	// Order.create(function(err, newOrder){
-	// 	if(err){
-	// 		req.flash("error", err.message);
-	// 		res.redirct("back");
-	// 	}else{
-	// 		newOrder.owner.id = req.user._id;
-	// 		newOrder.owner.username = req.user.username;
-	// 		newOrder.owner.chineseName = req.user.chineseName;
-	// 		newOrder.foods.push(req.body.food);
-	// 		//save
-	// 		newOrder.save();
-	// 		//redirct to restaurants page
-	// 		req.flash("success", "Successfully added to cart!")
-	// 		res.redirect("back");
-	// 	}
-	// });
 });
 
 // Show
 router.get("/:id",  function(req, res){
 	if(!req.user){
-		req.flash("error", "这种行为不是很有意思");
+		req.flash("error", "Please login to do that!");
 		res.redirect("/login");
 	}
 	User.findById(req.user._id, function(err, foundUser){
@@ -66,8 +49,8 @@ router.get("/:id",  function(req, res){
 			res.redirect("/restaurants");
 		}
 		var date = new Date();
-		var start = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-		var end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate() + 1);
+		var start = moment().startOf("day");
+		var end = moment().endOf("day");
 		Order.find()
 			 .where("owner.id").equals(foundUser._id)
 			 .where("createdAt").gt(start).lt(end)
@@ -76,7 +59,13 @@ router.get("/:id",  function(req, res){
 				req.flash("error", "Something went wrong");
 				res.redirect("/restaurants");
 			}
-			res.render("order/show", {user: foundUser, orders: orders});
+			var subtotal = 0;
+			for(var i = 0; i < orders.length; i++) {
+				subtotal += Number(orders[i].foods[0].totalPrice);
+			}
+			var total = (subtotal * dailyRatio.RATIO).toFixed(2);
+			var extra = {subtotal: subtotal, total: total, dailyRatio: dailyRatio.RATIO};
+			res.render("order/show", {user: foundUser, orders: orders, extra: extra});
 		});
 	});
 });

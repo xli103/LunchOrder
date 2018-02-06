@@ -51,7 +51,7 @@ middlewareObj.checkOrderOwnership = function(req, res, next){
 middlewareObj.checkOrderTime = function(req, res, next){
 	if(req.isAuthenticated()){
 		if(checkTime()){
-			next();
+			return next();
 		}
 		req.flash("error", "点餐时间已过，请明天再来!");
 		res.redirect("/orders-today");

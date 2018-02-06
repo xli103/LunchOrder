@@ -9,6 +9,7 @@ var restaurantSchema = new mongoose.Schema({
 	location: String,
 	lat: Number,
 	lng: Number,
+	delivery_fee: String,
 	isActive: {type: Boolean, defalut: false},
 	// add provider here
 	// add comments here

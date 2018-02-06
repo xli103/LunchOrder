@@ -9,29 +9,51 @@
 
 
 <div>
-		<h2><p style="text-align: center;">今日开放订餐的餐厅为： <span id="restaurantToday"><%= restaurants[0].name %></span></p></h2>
-		<h6 style="text-align: center;"><em style="color: red;">每日点餐时间为 0:00 - 11:20</em></h6>
-		<p style="text-align: center;"><a class="btn btn-primary btn-md" href="/restaurants/<%= restaurants[0]._id %>"> 进入餐厅 </a></p>
+	<% if(restaurants[0]){ %>
+		<h2><p style="text-align: center;">Today's Openning： <span style="color: green;" id="restaurantToday"><%= restaurants[0].name %></span></p></h2>
+		<h6 style="text-align: center;"><em style="color: red;">Daily Openning Hours: 0:00 - 11:20 EST</em></h6>
+		<p style="text-align: center;"><a class="btn btn-primary btn-md" href="/restaurants/<%= restaurants[0]._id %>"> Order Now! </a></p>
+	<% } else { %>
+		<br><br>
+		<h3 style="text-align: center; color: red;">饭头忘记开放订餐了，快提醒他！！</h3>
+		<br><br><br>
+	<% } %>
 </div>
+
 
 
 <br>
 
-<h1> 今日群订单 </h1>
-
-<table class=table>
+<h1> Order Review </h1>
+<h4 style="text-align: right; color: red; text-align: right; display: none;" id="ratioDisplay">Ratio of The Day: x<%= orderReview.ratio %></h4>
+<table class="table" id="staticTable">
 	<thead>
 		<tr>
-			<th>dish</th>
-			<th>amount</th>
-			<th>price($)</th>
+			<th>Dish</th>
+			<th>Amount</th>
+			<th>Price($)</th>
 		</tr>
 	</thead>
 	<tfoot>
 		<tr>
+			<th>Subtotal: </th>
+			<th></th>
+			<th><span id="subtotal"><%= orderReview.subtotal %></span></th>
+		</tr>
+		<tr>
+			<th>Tax: </th>
+			<th></th>
+			<th><span id="tax"><%= orderReview.tax %></span></th>
+		</tr>
+		<tr>
+			<th>Delivery fee(including tips): </th>
+			<th></th>
+			<th><%= orderReview.extra %></th>
+		</tr>	
+		<tr>
 			<th>Total: </th>
 			<th></th>
-			<th id="total"></th>
+			<th><span id="total"><%= orderReview.total %></span></th>
 		</tr>
 	</tfoot>
 	<tbody>
@@ -67,16 +89,16 @@
 
 
 
-<h1> 订单详情 </h1>
+<h1> Order Details </h1>
 
 <table id="orderDetails" class="table">
 	<thead>
 		<tr>
-			<td>姓名</td>
-			<td>菜名</td>
-			<td>数量</td>
-			<td>下单时间</td>
-			<td>总价</td>
+			<td>Name</td>
+			<td>Dish</td>
+			<td>Amount</td>
+			<td>CreatedAt</td>
+			<td>Price($)</td>
 		</tr>
 	</thead>
 
@@ -99,7 +121,53 @@
 </table>
 
 
+<script type="text/javascript">
 
+	window.onload = function disPlayRatio() {
+		if(checkTime()) {
+			ratioDisplay.style.display = "block";
+		}
+	}
+
+
+	// window.onload = function getTotal() {
+	// var table = document.getElementById("staticTable");
+	// var subDisplay = document.getElementById("subtotal");
+	// var taxDisplay = document.getElementById("tax");
+	// var totalDisplay = document.getElementById("total");
+	// var ratioDisplay = document.getElementById("ratio");
+
+	// var sub = 0;
+	// for(var i = 1; i < table.rows.length - 4; i++){
+	// 	sub += Number(table.rows[i].cells[2].innerHTML);
+	// }
+	// var tax = sub * 0.07;
+	// var delivery = Number(table.rows[table.rows.length - 2].cells[2].innerHTML);
+	// var total = sub + delivery + tax;
+	// var ratio = total / sub;
+
+	// subDisplay.innerHTML = sub.toFixed(2);
+	// taxDisplay.innerHTML = tax.toFixed(2);
+	// totalDisplay.innerHTML = total.toFixed(2);
+
+	// var date = new Date();
+	// var flag = false;
+	// if(date.getHours() == 11) {
+	// if(date.getMinutes() > 19) {
+	// 		flag = true;
+	// 	}
+	// }
+	// if(date.getHours() > 11) {
+	// 	flag = true;
+	// }
+	// if(flag === true) {
+	// 	ratioDisplay.innerHTML = "Ratio of The Day: x" + ratio.toFixed(4);
+	// }
+
+	
+//}
+
+</script>
 
 
 

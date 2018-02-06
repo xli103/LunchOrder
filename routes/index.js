@@ -8,6 +8,8 @@ var crypto = require("crypto");
 var Order = require("../models/order");
 var Restaurant = require("../models/restaurant");
 var middleware = require("../middleware");
+var dailyRatio = require("../conf/daily_ratio");
+var moment = require("moment");
 
 //root page
 router.get("/", function(req, res){
@@ -74,8 +76,8 @@ router.get("/logout", function(req, res){
 // show foods page
 router.get("/orders-today", middleware.isLoggedIn, function(req, res){
 	var date = new Date();
-	var start = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-	var end = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate() + 1);
+	var start = moment().startOf("day");
+	var end = moment().endOf("day");
 	Order.find()
 			 .where("createdAt").gt(start).lt(end)
 			 .exec(function(err, orders){
@@ -91,7 +93,24 @@ router.get("/orders-today", middleware.isLoggedIn, function(req, res){
 					req.flash("error", "Something went wrong");
 					res.redirect("/landing");
 				}
-				res.render("orders-today", {orders: orders, foodStatic: foodStatic, restaurants: restaurants});
+
+				var subtotal = 0;
+				var total = 0;
+				var extra = 0;
+				var tax = 0;
+				var ratio = dailyRatio.RATIO;
+				if(restaurants.length >= 1){
+					extra = Number(restaurants[0].delivery_fee);
+					for(var i = 0; i < orders.length; i++) {
+						subtotal += Number(orders[i].foods[0].totalPrice);
+					}
+					tax = (subtotal * 0.07);
+					total = subtotal + tax + extra;
+					ratio = (total / subtotal).toFixed(4);
+					dailyRatio.RATIO = ratio;
+				}
+				var orderReview = {subtotal: subtotal.toFixed(2), total: total.toFixed(2), tax: tax.toFixed(2), extra: extra.toFixed(2), ratio: ratio};
+				res.render("orders-today", {orders: orders, foodStatic: foodStatic, restaurants: restaurants, orderReview: orderReview});
 			});
 		});
 });
@@ -107,6 +126,7 @@ function getDishCount(arr) {
 			var update = map.get(t.foods[0].name);
 			update.amount = Number(t.foods[0].amount) + Number(update.amount);
 			update.totalPrice = Number(t.foods[0].totalPrice) + Number(update.totalPrice);
+			update.totalPrice = update.totalPrice.toFixed(2);
 			map.set(t.foods[0].name, update);
 		}else{
 			t.foods[0].totalPrice = Number(t.foods[0].totalPrice);

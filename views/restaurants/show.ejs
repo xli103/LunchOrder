@@ -1,7 +1,7 @@
 <% include ../partials/header %>
 
 
-	<div class="row" style="position: relative;">
+	<div class="row">
 		<div class="col-md-3">
 			<p class="lead">Restaurants</p>
 			<br><hr><br>
@@ -12,7 +12,7 @@
 			<!-- change to orders here  -->
 			<br><br>
 
-			<div class="collapse" id="collapseNewOrder" onclick="chechTime()">
+			<div class="collapse" id="collapseNewOrder" onmouseover="checkNewOrderTime()">
 				<div class="well" style="border-left: 5px solid #00C851;">
 					<% if(restaurant.foods.length < 1) { %>
 						<h5>对不起，饭头太懒，没有添加菜单！</h5>
@@ -33,7 +33,7 @@
 									</select>
 								</div>
 								<div class="form-group">
-									<input id="selectedFoodAmount" class="form-control" type="number" name="food[amount]" placeholder="Amount(1-10)" min="1" max="10" step="1" onchange="getPrice()">
+									<input id="selectedFoodAmount" class="form-control" type="number" name="food[amount]" placeholder="Amount(1-10)" min="1" max="10" step="1" onchange="getPrice()" required>
 								</div>
 								<!-- security risks here -->
 								<div class="form-group">
@@ -61,7 +61,7 @@
 					<% if(currentUser && currentUser.isAdmin){ %>
 						<a class="btn btn-warning" href="/restaurants/<%= restaurant._id %>/edit">Edit</a>
 						<form class="delete-form" action="/restaurants/<%= restaurant._id %>?_method=DELETE" method="POST">
-							<button class="btn btn-danger">Delete</button>
+							<button class="btn btn-danger pull-right">Delete</button>
 						</form>
 					<% } %>
 						
@@ -131,7 +131,7 @@
 			            	Edit</a>
 			          		<!--Delete food button-->
 			          		<form id="delete-form" action="/restaurants/<%= restaurant._id %>/foods/<%= food._id %>?_method=DELETE" method="POST" style="display: inline;">
-			            		<button class="btn btn-xs btn-danger">Delete</button>
+			            		<button class="btn btn-xs btn-danger pull-right">Delete</button>
 			          		</form>
 			          		<!--Edit food form-->
 			          		<div class="collapse" id="collapseEdit<%= food._id %>">

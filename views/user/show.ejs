@@ -4,7 +4,7 @@
 	<div class="col-md-3">
 		<h1><%= user.firstName + " " + user.lastName %></h1>
 		<div class="thumbnail">
-			<img src="https://res.cloudinary.com/dzi9oazgw/image/upload/t_media_lib_thumb/v1515365276/default_avatar_wju6it.png" alt="user profile image" height="300px" width="200px"/>
+			<img src="https://res.cloudinary.com/dzi9oazgw/image/upload/t_media_lib_thumb/v1515365276/default_avatar_wju6it.png" alt="user profile image" height="200px" width="200px"/>
 			<!-- <div class="caption"><a href="mailto:<%= user.email %>"><%= user.email %></a></div> -->
 		</div>
 		<h3>Personal Info</h3>
@@ -27,17 +27,17 @@
 			<tfoot>
 				<!-- To Fill -->
 			</tfoot>
-			<% orders.forEach(function(order){ %>
+			<% for(var i = orders.length - 1; i >= 0; i--){ %>
+			<% var order = orders[i] %>
 				<tbody>
 					<tr>
-
-						<td><%= moment(order.createdAt).subtract(10, 'days').calendar(); %></td>
+						<td><%= moment(order.createdAt).format("l"); %></td>
 						<td><%= order.foods[0].name %></td>
 						<td><%= order.foods[0].amount %></td>
 						<td><%= order.foods[0].totalPrice %></td>
 					</tr>
 				</tbody>
-			<% }) %>
+			<% } %>
 		</table>
 	</div>
 </div>
